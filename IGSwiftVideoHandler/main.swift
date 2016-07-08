@@ -74,7 +74,7 @@ class IGVideoHandler{
 			let aNow: NSDate = NSDate ()
 			let aCurrentProgress: Float = exportSession.progress
 			let aDeltaProgress: Float = aCurrentProgress - aLastProgress;
-			print("\(aNow) - aCycleCounter: \(aCycleCounter); aWaitResutl: \(aWaitResult); progress: \(aCurrentProgress); delta: \(aDeltaProgress)")
+			print("\(aNow) - aCycleCounter: \(aCycleCounter); aWaitResult: \(aWaitResult); progress: \(aCurrentProgress); delta: \(aDeltaProgress)")
 			aLastProgress = aCurrentProgress
 			if 0 == aWaitResult{
 				break;
@@ -131,7 +131,7 @@ class IGVideoMerger: IGVideoHandler {
 				let aDispatchTime: dispatch_time_t = dispatch_time(DISPATCH_TIME_NOW, 1000*1000*1000*10)
 				let aWaitResult = dispatch_semaphore_wait(semaphore, aDispatchTime)
 				let aNow: NSDate = NSDate ()
-				print("\(aNow) - aCycleCounter: \(aCycleCounter); aWaitResutl: \(aWaitResult); status: \(status.rawValue)")
+				print("\(aNow) - aCycleCounter: \(aCycleCounter); aWaitResult: \(aWaitResult); status: \(status.rawValue)")
 				if 0 == aWaitResult{
 					break;
 				}
