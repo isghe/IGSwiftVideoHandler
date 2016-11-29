@@ -107,7 +107,7 @@ class IGVideoMerger: IGVideoHandler {
 			let tracksKey: [String] = ["tracks"]
 			var aDone: Bool = false
 			
-			let semaphore:dispatch_semaphore_t = dispatch_semaphore_create(0)!
+			let semaphore:dispatch_semaphore_t = dispatch_semaphore_create(0)
 			videoAsset.loadValuesAsynchronouslyForKeys(tracksKey, completionHandler: { () -> Void in
 				var error: NSError?
 				let status: AVKeyValueStatus  = videoAsset.statusOfValueForKey(tracksKey [0], error: &error)
@@ -173,7 +173,7 @@ class IGVideoMerger: IGVideoHandler {
 		
 		var aCounter: Int64 = 0
 		var aDone: Bool = false
-		let semaphore:dispatch_semaphore_t = dispatch_semaphore_create(0)!
+		let semaphore:dispatch_semaphore_t = dispatch_semaphore_create(0)
 		exportSession.exportAsynchronouslyWithCompletionHandler({
 			aCounter += 1
 			let aStatus: AVAssetExportSessionStatus = exportSession.status
@@ -246,7 +246,7 @@ class IGVideoExtractor: IGVideoHandler {
 					print ("exportSession.estimatedOutputFileLength: \(exportSession.estimatedOutputFileLength)")
 					var aCounter: Int64 = 0
 					var aDone: Bool = false
-					let semaphore:dispatch_semaphore_t = dispatch_semaphore_create(0)!
+					let semaphore:dispatch_semaphore_t = dispatch_semaphore_create(0)
 					exportSession.exportAsynchronouslyWithCompletionHandler({
 						aCounter += 1
 						let aStatus: AVAssetExportSessionStatus = exportSession.status
