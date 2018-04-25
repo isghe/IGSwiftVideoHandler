@@ -92,8 +92,8 @@ class IGVideoMerger: IGVideoHandler {
 	override func doIt(){
 		let aPathStringContainer: [(path: String, ext: String)] = self.fData.sources
 		let mixComposition: AVMutableComposition = AVMutableComposition()
-		let mutableCompVideoTrack:AVMutableCompositionTrack = mixComposition.addMutableTrack(withMediaType: AVMediaTypeVideo, preferredTrackID: Int32 (kCMPersistentTrackID_Invalid))
-		let mutableCompAudioTrack:AVMutableCompositionTrack = mixComposition.addMutableTrack(withMediaType: AVMediaTypeAudio, preferredTrackID: Int32 (kCMPersistentTrackID_Invalid))
+		let mutableCompVideoTrack:AVMutableCompositionTrack = mixComposition.addMutableTrack(withMediaType: AVMediaType.video, preferredTrackID: Int32 (kCMPersistentTrackID_Invalid))!
+		let mutableCompAudioTrack:AVMutableCompositionTrack = mixComposition.addMutableTrack(withMediaType: AVMediaType.audio, preferredTrackID: Int32 (kCMPersistentTrackID_Invalid))!
 		
 		var currentCMTime:CMTime = kCMTimeZero
 		var i: Int = 0
@@ -137,8 +137,8 @@ class IGVideoMerger: IGVideoHandler {
 				}
 			}
 			
-			var aVideo: [AnyObject] = videoAsset.tracks (withMediaType: AVMediaTypeVideo)
-			var aAudio: [AnyObject] = videoAsset.tracks (withMediaType: AVMediaTypeAudio)
+			var aVideo: [AnyObject] = videoAsset.tracks (withMediaType: AVMediaType.video)
+			var aAudio: [AnyObject] = videoAsset.tracks (withMediaType: AVMediaType.audio)
 			if "mpeg" == aPath.ext {
 				let instruction:AVMutableVideoCompositionInstruction = AVMutableVideoCompositionInstruction ()
 				instruction.timeRange = CMTimeRangeMake(kCMTimeZero, videoAsset.duration)
@@ -163,7 +163,7 @@ class IGVideoMerger: IGVideoHandler {
 		
 		let randomFinalVideoFileURL: URL = URL (fileURLWithPath: "\(self.fData.destination).mp4")
 		let exportSession:AVAssetExportSession = AVAssetExportSession (asset: mixComposition, presetName: AVAssetExportPreset960x540)!
-		exportSession.outputFileType = AVFileTypeMPEG4
+		exportSession.outputFileType = AVFileType.mp4
 		exportSession.outputURL = randomFinalVideoFileURL
 		let val: CMTimeValue = mixComposition.duration.value
 		let start: CMTime = CMTimeMake(0, 1)
@@ -222,7 +222,7 @@ class IGVideoExtractor: IGVideoHandler {
 		print(aAsset.trackGroups)
 		print(aAsset.tracks)
 		
-		let movieTracks: [AnyObject] = aAsset.tracks (withMediaType: AVMediaTypeVideo);
+		let movieTracks: [AnyObject] = aAsset.tracks (withMediaType: AVMediaType.video);
 		print(movieTracks)
 		assert (1 == movieTracks.count);
 		
@@ -238,7 +238,7 @@ class IGVideoExtractor: IGVideoHandler {
 					let exportSession: AVAssetExportSession = AVAssetExportSession (asset: aAsset, presetName: AVAssetExportPreset960x540)!
 					exportSession.outputURL = URL (fileURLWithPath: String(format:"%@_%@_%@_%@.mp4", self.fData.title, self.fData.date.toString(), aCurrentTimeRange.start.toString(), aCurrentTimeRange.end.toString()))
 					print ("exportSession.outputURL: \(String(describing: exportSession.outputURL))");
-					exportSession.outputFileType = AVFileTypeMPEG4
+					exportSession.outputFileType = AVFileType.mp4
 					
 					let range: CMTimeRange = CMTimeRangeMake(aCurrentTimeRange.start.toTime(), CMTimeSubtract(aCurrentTimeRange.end.toTime(), aCurrentTimeRange.start.toTime()))
 					exportSession.timeRange = range
