@@ -22,7 +22,7 @@ class IGHMS{
 	
 	func toTime () -> CMTime{
 		let aValue: Int64 = (self.hour*3600 + self.minute * 60)*1000 + Int64 (self.second*1000)
-		let ret: CMTime = CMTime (value: aValue, timescale: 1000, flags: CMTimeFlags.valid, epoch: CMTimeEpoch.allZeros)
+		let ret: CMTime = CMTime (value: aValue, timescale: 1000, flags: CMTimeFlags.valid, epoch: 0)
 		return ret
 	}
 	func toString () -> String{
@@ -48,7 +48,7 @@ class IGDDMMYYYY{
 }
 
 class IGVideoHandler{
-	fileprivate func getVisualFormatContraints () -> [AnyObject]{
+	fileprivate func getVisualFormatContraints () -> [String]{
 		return ["H", "V"].map {
 			return $0 + ":|-margin-[view]-margin-|"
 		}
@@ -56,7 +56,7 @@ class IGVideoHandler{
 	
 	class fileprivate func toTime (_ hour: Int64, minute: Int64, second: Int64) -> CMTime{
 		let aValue: Int64 = hour*3600 + minute * 60 + second
-		let ret: CMTime = CMTime (value: aValue, timescale: 1, flags: CMTimeFlags.valid, epoch: CMTimeEpoch.allZeros)
+		let ret: CMTime = CMTime (value: aValue, timescale: 1, flags: CMTimeFlags.valid, epoch: 0)
 		return ret
 	}
 	
@@ -76,7 +76,7 @@ class IGVideoHandler{
 			let aDeltaProgress: Float = aCurrentProgress - aLastProgress;
 			print("\(aNow) - aCycleCounter: \(aCycleCounter); aWaitResult: \(aWaitResult); progress: \(aCurrentProgress); delta: \(aDeltaProgress)")
 			aLastProgress = aCurrentProgress
-			if 0 == aWaitResult{
+			if DispatchTimeoutResult.success == aWaitResult{
 				break;
 			}
 			//
@@ -132,7 +132,7 @@ class IGVideoMerger: IGVideoHandler {
 				let aWaitResult = semaphore.wait(timeout: aDispatchTime)
 				let aNow: Date = Date ()
 				print("\(aNow) - aCycleCounter: \(aCycleCounter); aWaitResult: \(aWaitResult); status: \(status.rawValue)")
-				if 0 == aWaitResult{
+				if DispatchTimeoutResult.success == aWaitResult{
 					break;
 				}
 			}
@@ -188,11 +188,11 @@ class IGVideoMerger: IGVideoHandler {
 			case AVAssetExportSessionStatus.exporting:
 				break
 			case AVAssetExportSessionStatus.failed:
-				print("exportSession.error: \(exportSession.error)")
+				print("exportSession.error: \(String(describing: exportSession.error))")
 				aDone = true
 				break
 			case AVAssetExportSessionStatus.cancelled:
-				print("exportSession.error: \(exportSession.error)")
+				print("exportSession.error: \(String(describing: exportSession.error))")
 				aDone = true
 				break
 			case AVAssetExportSessionStatus.unknown:
@@ -229,7 +229,7 @@ class IGVideoExtractor: IGVideoHandler {
 		let compatiblePresets: [AnyObject] = AVAssetExportSession.exportPresets (compatibleWith: aAsset) as [AnyObject]
 		print("compatiblePresets: \(compatiblePresets)")
 		if (compatiblePresets as! [String]).contains(AVAssetExportPreset960x540){
-			let queue:DispatchQueue = DispatchQueue.global(priority: DispatchQueue.GlobalQueuePriority.default);
+			let queue:DispatchQueue = DispatchQueue.global(qos: .default);
 			let group:DispatchGroup  = DispatchGroup();
 			for aCurrentTimeRange in self.fData.ranges{
 				queue.async(group: group,execute: {
@@ -237,7 +237,7 @@ class IGVideoExtractor: IGVideoHandler {
 					print ("end: \(aCurrentTimeRange.end.toString())")
 					let exportSession: AVAssetExportSession = AVAssetExportSession (asset: aAsset, presetName: AVAssetExportPreset960x540)!
 					exportSession.outputURL = URL (fileURLWithPath: String(format:"%@_%@_%@_%@.mp4", self.fData.title, self.fData.date.toString(), aCurrentTimeRange.start.toString(), aCurrentTimeRange.end.toString()))
-					print ("exportSession.outputURL: \(exportSession.outputURL)");
+					print ("exportSession.outputURL: \(String(describing: exportSession.outputURL))");
 					exportSession.outputFileType = AVFileTypeMPEG4
 					
 					let range: CMTimeRange = CMTimeRangeMake(aCurrentTimeRange.start.toTime(), CMTimeSubtract(aCurrentTimeRange.end.toTime(), aCurrentTimeRange.start.toTime()))
@@ -261,11 +261,11 @@ class IGVideoExtractor: IGVideoHandler {
 						case AVAssetExportSessionStatus.exporting:
 							break
 						case AVAssetExportSessionStatus.failed:
-							print("exportSession.error: \(exportSession.error)")
+							print("exportSession.error: \(String(describing: exportSession.error))")
 							aDone = true
 							break
 						case AVAssetExportSessionStatus.cancelled:
-							print("exportSession.error: \(exportSession.error)")
+							print("exportSession.error: \(String(describing: exportSession.error))")
 							aDone = true
 							break
 						case AVAssetExportSessionStatus.unknown:
@@ -279,7 +279,8 @@ class IGVideoExtractor: IGVideoHandler {
 					self.waitSemaphore(semaphore, exportSession: exportSession)
 				})
 			}
-			group.wait(timeout: DispatchTime.distantFuture)
+			let aWaitResult = group.wait(timeout: DispatchTime.distantFuture)
+			print("aSignalResult: \(aWaitResult)")
 			// dispatch_release(group)
 		}
 	}
