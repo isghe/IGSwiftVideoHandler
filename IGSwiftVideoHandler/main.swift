@@ -3,7 +3,7 @@
 //  IGSwiftVideoHandler
 //
 //  Created by Isidoro Ghezzi on 15/04/15.
-//  Copyright (c) 2015 Isidoro Ghezzi. All rights reserved.
+//  Copyright (c) 2015, 2016, 2017, 2018 Isidoro Ghezzi. All rights reserved.
 //
 
 import Foundation
